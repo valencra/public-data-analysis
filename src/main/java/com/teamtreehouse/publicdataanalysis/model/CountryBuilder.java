@@ -1,33 +1,30 @@
 package com.teamtreehouse.publicdataanalysis.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+// builder for country objects
+public class CountryBuilder {
 
-@Entity
-public class Country {
-    @Id
     private String code;
-
-    @Column
     private String name;
-
-    @Column
     private Double internetUsers;
-
-    @Column
     private Double adultLiteracyRate;
 
-    // Default constructor for JPA
-    public Country() {
+    public CountryBuilder(String code, String name) {
+        this.code = code;
+        this.name = name;
     }
 
-    // Constructor with builder object
-    public Country(CountryBuilder countryBuilder) {
-        this.code = countryBuilder.getCode();
-        this.name = countryBuilder.getName();
-        this.internetUsers = countryBuilder.getInternetUsers();
-        this.adultLiteracyRate = countryBuilder.getAdultLiteracyRate();
+    public CountryBuilder withInternetUsers(Double internetUsers) {
+        this.internetUsers = internetUsers;
+        return this;
+    }
+
+    public CountryBuilder withAdultLiteracyRate(Double adultLiteracyRate) {
+        this.adultLiteracyRate = adultLiteracyRate;
+        return this;
+    }
+
+    public Country build() {
+        return new Country(this);
     }
 
     public String getCode() {
