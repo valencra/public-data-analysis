@@ -1,0 +1,46 @@
+Country                             Internet Users          Literacy
+--------------------------------------------------------------------
+Afghanistan                                   5.90                --
+Angola                                       19.10             70.78
+Azerbaijan                                   58.70             99.79
+Bahamas, The                                 72.00                --
+Chad                                          2.30             38.23
+Chile                                        66.50                --
+China                                        45.80                --
+Colombia                                     51.70                --
+Comoros                                       6.50             76.55
+Gambia, The                                  14.00             53.19
+Georgia                                      43.30             99.75
+Germany                                      84.17                --
+Ghana                                        12.30                --
+Greece                                       59.87             97.47
+Greenland                                    65.80                --
+Grenada                                      35.00                --
+Guam                                         65.40                --
+Guatemala                                    19.70             77.04
+Guinea                                        1.60                --
+Guinea-Bissau                                 3.10             57.80
+Guyana                                       35.00                --
+Haiti                                        10.60                --
+Honduras                                     17.80             85.46
+Hungary                                      72.64             99.05
+India                                        15.10                --
+Indonesia                                    14.94                --
+Iraq                                          9.20             79.25
+Israel                                       70.80                --
+Italy                                        58.46             99.07
+Mauritania                                    6.20                --
+Mexico                                       43.46             93.96
+Pakistan                                     10.90                --
+Paraguay                                     36.90                --
+Qatar                                        85.30             97.48
+Somalia                                       1.50                --
+South Africa                                 46.50                --
+South Sudan                                  14.10                --
+Spain                                        71.64             98.08
+Syrian Arab Republic                         26.20             85.53
+Ukraine                                      41.00             99.74
+United Arab Emirates                         88.00                --
+United Kingdom                               89.84                --
+United States                                84.20                --
+Zambia                                       15.40                --
