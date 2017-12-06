@@ -11,6 +11,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,27 +77,28 @@ public class Application {
         switch (selectedOption) {
             case 1:
                 // View data table
-                System.out.printf("%nViewing data table...");
+                System.out.printf("%nViewing data table...%n%n");
+                viewDataTable();
                 break;
             case 2:
                 // View statistics
-                System.out.printf("%nViewing statistics...");
+                System.out.printf("%nViewing statistics...%n%n");
                 break;
             case 3:
                 // Add country
-                System.out.printf("%nAdding country...");
+                System.out.printf("%nAdding country...%n%n");
                 break;
             case 4:
                 // Edit country
-                System.out.printf("%nEditing country...");
+                System.out.printf("%nEditing country...%n%n");
                 break;
             case 5:
                 // Delete country
-                System.out.printf("%nDeleting country...");
+                System.out.printf("%nDeleting country...%n%n");
                 break;
             case 6:
                 // Exit
-                System.out.printf("%nExiting...");
+                System.out.printf("%nExiting...%n%n");
                 System.exit(0);
                 break;
             default:
@@ -109,6 +112,32 @@ public class Application {
         Criteria criteria = session.createCriteria(Country.class);
         List<Country> countries = criteria.list();
         session.close();
+        System.out.println(String.format(
+                "%s%n%s",
+                String.format("%-10s%-45s%15s%10s", "Code", "Country", "Internet Users", "Literacy"),
+                String.join("", Collections.nCopies(80, "-"))
+        ));
+        countries.stream().forEach(
+                country -> {
+                    System.out.println(
+                            String.format(
+                                    "%-10s%-45s%15s%10s",
+                                    country.getCode(),
+                                    country.getName(),
+                                    country.getInternetUsers() == null ? "--" : roundUpAndFormat(country.getInternetUsers()),
+                                    country.getAdultLiteracyRate() == null ? "--" : roundUpAndFormat(country.getAdultLiteracyRate())
+                            )
+                    );
+                }
+        );
+    }
 
+    private static String roundUpAndFormat(Double value) {
+        return String.format(
+                "%.2f",
+                new BigDecimal(value)
+                        .setScale(2, RoundingMode.HALF_UP)
+                        .doubleValue()
+                );
     }
 }

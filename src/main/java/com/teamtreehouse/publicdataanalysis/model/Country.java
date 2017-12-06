@@ -61,4 +61,14 @@ public class Country {
     public void setAdultLiteracyRate(Double adultLiteracyRate) {
         this.adultLiteracyRate = adultLiteracyRate;
     }
+
+    @Override
+    public String toString() {
+        return "Country{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", internetUsers=" + internetUsers +
+                ", adultLiteracyRate=" + adultLiteracyRate +
+                '}';
+    }
 }
