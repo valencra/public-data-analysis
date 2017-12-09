@@ -134,22 +134,61 @@ public class Application {
         // View statistics
         List<Country> countries = getCountries();
 
-        List<Double> internetUsers = countries.stream()
+        // Calculate individual statistics
+        List<Double> allInternetUsers = countries.stream()
+                .filter(country -> country.getInternetUsers() != null)
+                .map(country -> country.getInternetUsers())
+                .collect(Collectors.toList());
+        Map<String, Double> allInternetUsersStats = Statistics.calculateStatistics(allInternetUsers);
+        List<Double> allAdultLiteracyRates = countries.stream()
+                .filter(country -> country.getAdultLiteracyRate() != null)
+                .map(country -> country.getAdultLiteracyRate())
+                .collect(Collectors.toList());
+        Map<String, Double> allAdultLiteracyRatesStats = Statistics.calculateStatistics(allAdultLiteracyRates);
+
+        // Calculate correlation
+        List<Double> pairedInternetUsers = countries.stream()
                 .filter(country -> (country.getInternetUsers() != null) && (country.getAdultLiteracyRate() != null))
                 .map(country -> country.getInternetUsers())
                 .collect(Collectors.toList());
-        Map<String, Double> internetUsersStats = Statistics.calculateStatistics(internetUsers);
-
-        List<Double> adultLiteracyRates = countries.stream()
+        Map<String, Double> pairedInternetUsersStats = Statistics.calculateStatistics(pairedInternetUsers);
+        List<Double> pairedAdultLiteracyRates = countries.stream()
                 .filter(country -> (country.getInternetUsers() != null) && (country.getAdultLiteracyRate() != null))
                 .map(country -> country.getAdultLiteracyRate())
                 .collect(Collectors.toList());
-        Map<String, Double> adultLiteracyRatesStats = Statistics.calculateStatistics(adultLiteracyRates);
-
+        Map<String, Double> pairedAdultLiteracyRatesStats = Statistics.calculateStatistics(pairedAdultLiteracyRates);
         Double indicatorCorr = Statistics.calculateCorrelation(
-                internetUsers, internetUsersStats, adultLiteracyRates, adultLiteracyRatesStats
+                pairedInternetUsers, pairedInternetUsersStats, pairedAdultLiteracyRates, pairedAdultLiteracyRatesStats
         );
-        System.out.println(indicatorCorr);
+
+        System.out.println(String.format(
+                "%s%n%s",
+                String.format("%-20s%15s%15s%15s%15s", "Indicator", "Min", "Max", "Count", "Average"),
+                String.join("", Collections.nCopies(80, "-"))
+        ));
+        System.out.println(String.format(
+                "%s",
+                String.format(
+                        "%-20s%15s%15s%15s%15s",
+                        "Internet Users",
+                        roundUpAndFormat(allInternetUsersStats.get("min")),
+                        roundUpAndFormat(allInternetUsersStats.get("max")),
+                        roundUpAndFormat(allInternetUsersStats.get("count")),
+                        roundUpAndFormat(allInternetUsersStats.get("avg"))
+                )
+        ));
+        System.out.println(String.format(
+                "%s",
+                String.format(
+                        "%-20s%15s%15s%15s%15s",
+                        "Adult Literacy Rate",
+                        roundUpAndFormat(allAdultLiteracyRatesStats.get("min")),
+                        roundUpAndFormat(allAdultLiteracyRatesStats.get("max")),
+                        roundUpAndFormat(allAdultLiteracyRatesStats.get("count")),
+                        roundUpAndFormat(allAdultLiteracyRatesStats.get("avg"))
+                )
+        ));
+        System.out.printf("%n* Correlation: %s%n", roundUpAndFormat(indicatorCorr));
     }
 
     private static List<Country> getCountries() {
