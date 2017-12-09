@@ -1,6 +1,7 @@
 package com.teamtreehouse.publicdataanalysis;
 
 import com.teamtreehouse.publicdataanalysis.model.Country;
+import com.teamtreehouse.publicdataanalysis.utils.Statistics;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,9 +14,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Application {
     private static final SessionFactory sessionFactory = buildSessionFactory();
@@ -83,6 +83,7 @@ public class Application {
             case 2:
                 // View statistics
                 System.out.printf("%nViewing statistics...%n%n");
+                viewStatistics();
                 break;
             case 3:
                 // Add country
@@ -108,10 +109,7 @@ public class Application {
 
     private static void viewDataTable() {
         // View data table
-        Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(Country.class);
-        List<Country> countries = criteria.list();
-        session.close();
+        List<Country> countries = getCountries();
         System.out.println(String.format(
                 "%s%n%s",
                 String.format("%-10s%-45s%15s%10s", "Code", "Country", "Internet Users", "Literacy"),
@@ -132,7 +130,39 @@ public class Application {
         );
     }
 
+    private static void viewStatistics() {
+        // View statistics
+        List<Country> countries = getCountries();
+
+        List<Double> internetUsers = countries.stream()
+                .filter(country -> (country.getInternetUsers() != null) && (country.getAdultLiteracyRate() != null))
+                .map(country -> country.getInternetUsers())
+                .collect(Collectors.toList());
+        Map<String, Double> internetUsersStats = Statistics.calculateStatistics(internetUsers);
+
+        List<Double> adultLiteracyRates = countries.stream()
+                .filter(country -> (country.getInternetUsers() != null) && (country.getAdultLiteracyRate() != null))
+                .map(country -> country.getAdultLiteracyRate())
+                .collect(Collectors.toList());
+        Map<String, Double> adultLiteracyRatesStats = Statistics.calculateStatistics(adultLiteracyRates);
+
+        Double indicatorCorr = Statistics.calculateCorrelation(
+                internetUsers, internetUsersStats, adultLiteracyRates, adultLiteracyRatesStats
+        );
+        System.out.println(indicatorCorr);
+    }
+
+    private static List<Country> getCountries() {
+        // Get a list of all the countries in the data table
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(Country.class);
+        List<Country> countries = criteria.list();
+        session.close();
+        return countries;
+    }
+
     private static String roundUpAndFormat(Double value) {
+        // Round up and format doubles to 2 decimals
         return String.format(
                 "%.2f",
                 new BigDecimal(value)
@@ -140,4 +170,5 @@ public class Application {
                         .doubleValue()
                 );
     }
+
 }
