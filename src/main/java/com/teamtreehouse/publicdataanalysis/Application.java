@@ -84,6 +84,15 @@ public class Application {
             case 4:
                 // Edit country
                 System.out.printf("%nEditing country...%n%n");
+                boolean isEdited = false;
+                while (!isEdited) {
+                    try {
+                        isEdited = Menu.editCountry();
+                    }
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
                 break;
             case 5:
                 // Delete country

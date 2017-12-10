@@ -114,7 +114,7 @@ public class Menu {
     }
 
     public static boolean addCountry() throws IOException, IllegalArgumentException {
-        // Add a new country
+        // Add a country
         String code = null;
         String name = null;
         Double internetUsers = null;
@@ -128,7 +128,7 @@ public class Menu {
         System.out.print("Enter code: ");
         code = bufferedReader.readLine();
         if (code.length() != 3 || countryCodes.contains(code)) {
-            throw new IllegalArgumentException("Country code must be a unique, 3-character string");
+            throw new IllegalArgumentException("Country code must be a new, unique, 3-character string");
         }
 
         // get name
@@ -163,13 +163,88 @@ public class Menu {
                 .withInternetUsers(internetUsers)
                 .withAdultLiteracyRate(literacy)
                 .build();
-        System.out.println(newCountry);
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         session.save(newCountry);
         session.getTransaction().commit();
         session.close();
-        System.out.println("Country %added successfully!");
+        System.out.println("Country added successfully!");
+        return true;
+    }
+
+    public static boolean editCountry() throws IOException, IllegalArgumentException {
+        // Edit a country
+        String code = null;
+        String name = null;
+        Double internetUsers = null;
+        Double literacy = null;
+        List<Country> countries = getCountries();
+        List<String> countryCodes = countries.stream()
+                .map(country -> { return  country.getCode(); })
+                .collect(Collectors.toList());
+
+        // get country to edit
+        System.out.print("Enter code: ");
+        code = bufferedReader.readLine();
+        if (!countryCodes.contains(code)) {
+            throw new IllegalArgumentException("Country code must be an existing, unique, 3-character string");
+        }
+        Country country = getCountryByCode(code);
+
+        System.out.print("Enter new code: ");
+        code = bufferedReader.readLine();
+        if (code.equals(country.getCode())) {
+        }
+        else if (code.length() != 3 || countryCodes.contains(code)) {
+            throw new IllegalArgumentException("Country code must be a new, unique, 3-character string");
+        }
+        else {
+            country.setCode(code);
+        }
+
+        // get name
+        System.out.print("Enter new name: ");
+        name = bufferedReader.readLine();
+        if (name.length() > 32) {
+            throw new IllegalArgumentException("Country name can have a maximum of 32 characters");
+        }
+        else {
+            country.setName(name);
+        }
+
+        // get internet users
+        System.out.print("Enter new internet users: ");
+        internetUsers = Double.parseDouble(bufferedReader.readLine());
+        String internetUsersText = internetUsers.toString();
+        int digits = internetUsersText.indexOf(".");
+        int decimals = internetUsersText.length() - 1 - digits;
+        if (digits > 11 || decimals > 8) {
+            throw new IllegalArgumentException("Country internet users can have a maximum of 11 digits and 8 decimals");
+        }
+        else {
+            country.setInternetUsers(internetUsers);
+        }
+
+        // get literacy
+        System.out.print("Enter new literacy: ");
+        literacy = Double.parseDouble(bufferedReader.readLine());
+        String literacyText = literacy.toString();
+        digits = literacyText.indexOf(".");
+        decimals = literacyText.length() - 1 - digits;
+        if (digits > 11 || decimals > 8) {
+            throw new IllegalArgumentException("Country literacy can have a maximum of 11 digits and 8 decimals");
+        }
+        else {
+            country.setAdultLiteracyRate(literacy);
+        }
+
+        // create and save new country
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.update(country);
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("Country updated successfully!");
         return true;
     }
 
@@ -180,6 +255,14 @@ public class Menu {
         List<Country> countries = criteria.list();
         session.close();
         return countries;
+    }
+
+    private static Country getCountryByCode(String code) {
+        // Get a country by country code
+        Session session = sessionFactory.openSession();
+        Country country = session.get(Country.class, code);
+        session.close();
+        return country;
     }
 
     private static String roundUpAndFormat(Double value) {
