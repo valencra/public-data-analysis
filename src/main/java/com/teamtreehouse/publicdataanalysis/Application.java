@@ -1,6 +1,7 @@
 package com.teamtreehouse.publicdataanalysis;
 
 import com.teamtreehouse.publicdataanalysis.model.Country;
+import com.teamtreehouse.publicdataanalysis.model.CountryBuilder;
 import com.teamtreehouse.publicdataanalysis.utils.Statistics;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -88,6 +89,16 @@ public class Application {
             case 3:
                 // Add country
                 System.out.printf("%nAdding country...%n%n");
+                boolean isAdded = false;
+                while (!isAdded) {
+                    try {
+                        isAdded = addCountry();
+                    }
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
                 break;
             case 4:
                 // Edit country
@@ -189,6 +200,66 @@ public class Application {
                 )
         ));
         System.out.printf("%n* Correlation: %s%n", roundUpAndFormat(indicatorCorr));
+    }
+
+    private static boolean addCountry() throws IOException, IllegalArgumentException {
+        // Add a new country
+        String code = null;
+        String name = null;
+        Double internetUsers = null;
+        Double literacy = null;
+        List<Country> countries = getCountries();
+        List<String> countryCodes = countries.stream()
+                .map(country -> { return  country.getCode(); })
+                .collect(Collectors.toList());
+
+        // get code
+        System.out.print("Enter code: ");
+        code = bufferedReader.readLine();
+        if (code.length() != 3 || countryCodes.contains(code)) {
+            throw new IllegalArgumentException("Country code must be a unique, 3-character string");
+        }
+
+        // get name
+        System.out.print("Enter name: ");
+        name = bufferedReader.readLine();
+        if (name.length() > 32) {
+            throw new IllegalArgumentException("Country name can have a maximum of 32 characters");
+        }
+
+        // get internet users
+        System.out.print("Enter internet users: ");
+        internetUsers = Double.parseDouble(bufferedReader.readLine());
+        String internetUsersText = internetUsers.toString();
+        int digits = internetUsersText.indexOf(".");
+        int decimals = internetUsersText.length() - 1 - digits;
+        if (digits > 11 || decimals > 8) {
+            throw new IllegalArgumentException("Country internet users can have a maximum of 11 digits and 8 decimals");
+        }
+
+        // get literacy
+        System.out.print("Enter literacy: ");
+        literacy = Double.parseDouble(bufferedReader.readLine());
+        String literacyText = literacy.toString();
+        digits = literacyText.indexOf(".");
+        decimals = literacyText.length() - 1 - digits;
+        if (digits > 11 || decimals > 8) {
+            throw new IllegalArgumentException("Country literacy can have a maximum of 11 digits and 8 decimals");
+        }
+
+        // create and save new country
+        Country newCountry = new CountryBuilder(code, name)
+                .withInternetUsers(internetUsers)
+                .withAdultLiteracyRate(literacy)
+                .build();
+        System.out.println(newCountry);
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.save(newCountry);
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("Country %added successfully!");
+        return true;
     }
 
     private static List<Country> getCountries() {
