@@ -238,13 +238,41 @@ public class Menu {
             country.setAdultLiteracyRate(literacy);
         }
 
-        // create and save new country
+        // edit and update country
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         session.update(country);
         session.getTransaction().commit();
         session.close();
         System.out.println("Country updated successfully!");
+        return true;
+    }
+
+    public static boolean deleteCountry() throws IOException, IllegalArgumentException {
+        // Delete a country
+        String code = null;
+        List<Country> countries = getCountries();
+        List<String> countryCodes = countries.stream()
+                .map(country -> {
+                    return country.getCode();
+                })
+                .collect(Collectors.toList());
+
+        // get country to delete
+        System.out.print("Enter code: ");
+        code = bufferedReader.readLine();
+        if (!countryCodes.contains(code)) {
+            throw new IllegalArgumentException("Country code must be an existing, unique, 3-character string");
+        }
+        Country country = getCountryByCode(code);
+
+        // delete country
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.delete(country);
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("Country deleted successfully!");
         return true;
     }
 

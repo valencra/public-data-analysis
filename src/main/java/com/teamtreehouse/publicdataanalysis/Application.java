@@ -11,6 +11,7 @@ public class Application {
     private static final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) {
+        Menu menu = new Menu(); // only has static methods (instance not used), but instantiated to kick-off session builder at the beginning.
         int selectedOption = 0;
         while (selectedOption != 6) {
             displayMenu();
@@ -21,7 +22,6 @@ public class Application {
             }
             runSelectedOption(selectedOption);
         }
-
     }
 
     private static void displayMenu() {
@@ -97,6 +97,15 @@ public class Application {
             case 5:
                 // Delete country
                 System.out.printf("%nDeleting country...%n%n");
+                boolean isDeleted = false;
+                while (!isDeleted) {
+                    try {
+                        isDeleted = Menu.deleteCountry();
+                    }
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
                 break;
             case 6:
                 // Exit
